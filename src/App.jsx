@@ -29,6 +29,14 @@ export default function App() {
 
   const activeGroup = groups.find(g => g.id === activeGroupId)
 
+  function handleAddExpense(expense) {
+    setGroups(prev => prev.map(g =>
+      g.id === activeGroupId
+        ? { ...g, expenses: [...g.expenses, expense] }
+        : g
+    ))
+  }
+
   return (
     <div className="app">
       <Sidebar
@@ -50,7 +58,9 @@ export default function App() {
       {showAddExpense && (
         <AddExpense
           group={activeGroup}
+          currentUser={CURRENT_USER}
           onClose={() => setShowAddExpense(false)}
+          onAdd={handleAddExpense}
         />
       )}
     </div>
