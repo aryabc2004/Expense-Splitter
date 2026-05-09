@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { nameOf, memberColor, getInitials } from '../utils/calculations'
+import ExpenseDetail from './ExpenseDetail'
 
 export default function ExpensesTab({ group, currentUser }) {
   const [sortBy, setSortBy] = useState('date')
   const [sortDir, setSortDir] = useState(-1)
+  const [selectedExpense, setSelectedExpense] = useState(null)
 
   function toggleDir() {
     setSortDir(prev => prev * -1)
@@ -38,7 +40,12 @@ export default function ExpensesTab({ group, currentUser }) {
         <div className="empty-state">No expenses yet. Add one above.</div>
       ) : (
         sorted.map(exp => (
-          <div className="expense-row" key={exp.id}>
+          <div
+            className="expense-row"
+            key={exp.id}
+            onClick={() => setSelectedExpense(exp)}
+            style={{ cursor: 'pointer' }}
+          >
             <div
               className="exp-icon"
               style={{
@@ -60,6 +67,15 @@ export default function ExpensesTab({ group, currentUser }) {
             </div>
           </div>
         ))
+      )}
+
+      {selectedExpense && (
+        <ExpenseDetail
+          expense={selectedExpense}
+          group={group}
+          currentUser={currentUser}
+          onClose={() => setSelectedExpense(null)}
+        />
       )}
     </div>
   )
