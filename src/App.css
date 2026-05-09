@@ -64,3 +64,64 @@ body {
   color: #a8a8a5;
   font-size: 14px;
 }
+.group-list {
+  padding: 8px;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #a8a8a5;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 8px 8px 4px;
+}
+
+.group-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.12);
+  margin-bottom: 8px;
+  background: white;
+  cursor: pointer;
+}
+
+.group-card.active {
+  border-color: #1D9E75;
+  background: #E1F5EE;
+}
+
+.group-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.group-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1c1c1a;
+}
+
+.group-meta {
+  font-size: 11px;
+  color: #6b6b68;
+  margin-top: 2px;
+}
+
+.topbar {
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topbar-sub {
+  font-size: 12px;
+  color: #6b6b68;
+}
