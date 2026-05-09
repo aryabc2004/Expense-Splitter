@@ -23,3 +23,32 @@ export function computeBalances(group) {
   group.settlements.forEach(s => { bal[s.from] -= s.amount; bal[s.to] += s.amount })
   return bal
 }
+export function minimumTransactions(balances) {
+  const debtors = []
+  const creditors = []
+
+  Object.entries(balances).forEach(([person, balance]) => {
+    const rounded = Math.round(balance * 100) / 100
+    if (rounded < -0.01) debtors.push({ person, amount: -rounded })
+    else if (rounded > 0.01) creditors.push({ person, amount: rounded })
+  })
+
+  const transactions = []
+  let i = 0, j = 0
+
+  while (i < debtors.length && j < creditors.length) {
+    const debtor = debtors[i]
+    const creditor = creditors[j]
+    const amount = Math.min(debtor.amount, creditor.amount)
+
+    transactions.push({ from: debtor.person, to: creditor.person, amount })
+
+    debtor.amount -= amount
+    creditor.amount -= amount
+
+    if (debtor.amount < 0.01) i++
+    if (creditor.amount < 0.01) j++
+  }
+
+  return transactions
+}

@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar'
 import Topbar from './components/Topbar'
 import BalancesTab from './components/BalancesTab'
 import ExpensesTab from './components/ExpensesTab'
+import SettleTab from './components/SettleTab'
 import AddExpense from './components/AddExpense'
 
 const INITIAL_GROUPS = [
@@ -35,6 +36,22 @@ export default function App() {
     setGroups(prev => prev.map(g =>
       g.id === activeGroupId
         ? { ...g, expenses: [...g.expenses, expense] }
+        : g
+    ))
+  }
+
+  function handleSettle(transaction) {
+    setGroups(prev => prev.map(g =>
+      g.id === activeGroupId
+        ? {
+            ...g,
+            settlements: [...g.settlements, {
+              from: transaction.from,
+              to: transaction.to,
+              amount: transaction.amount,
+              date: new Date().toISOString().slice(0, 10)
+            }]
+          }
         : g
     ))
   }
@@ -73,7 +90,11 @@ export default function App() {
             <ExpensesTab group={activeGroup} currentUser={CURRENT_USER} />
           )}
           {activeTab === 'settle' && (
-            <div className="empty-state">Settle up coming in step 8.</div>
+            <SettleTab
+              group={activeGroup}
+              currentUser={CURRENT_USER}
+              onSettle={handleSettle}
+            />
           )}
 
         </div>
