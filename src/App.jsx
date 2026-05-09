@@ -6,6 +6,7 @@ import BalancesTab from './components/BalancesTab'
 import ExpensesTab from './components/ExpensesTab'
 import SettleTab from './components/SettleTab'
 import AddExpense from './components/AddExpense'
+import CreateGroup from './components/CreateGroup'
 
 const INITIAL_GROUPS = [
   {
@@ -28,6 +29,7 @@ export default function App() {
   const [groups, setGroups] = useState(INITIAL_GROUPS)
   const [activeGroupId, setActiveGroupId] = useState('g1')
   const [showAddExpense, setShowAddExpense] = useState(false)
+  const [showCreateGroup, setShowCreateGroup] = useState(false)
   const [activeTab, setActiveTab] = useState('balances')
 
   const activeGroup = groups.find(g => g.id === activeGroupId)
@@ -56,12 +58,19 @@ export default function App() {
     ))
   }
 
+  function handleCreateGroup(newGroup) {
+    setGroups(prev => [...prev, newGroup])
+    setActiveGroupId(newGroup.id)
+    setActiveTab('balances')
+  }
+
   return (
     <div className="app">
       <Sidebar
         groups={groups}
         activeGroupId={activeGroupId}
         onSelectGroup={setActiveGroupId}
+        onCreateGroup={() => setShowCreateGroup(true)}
       />
 
       <div className="main">
@@ -106,6 +115,14 @@ export default function App() {
           currentUser={CURRENT_USER}
           onClose={() => setShowAddExpense(false)}
           onAdd={handleAddExpense}
+        />
+      )}
+
+      {showCreateGroup && (
+        <CreateGroup
+          groupCount={groups.length}
+          onClose={() => setShowCreateGroup(false)}
+          onCreate={handleCreateGroup}
         />
       )}
     </div>

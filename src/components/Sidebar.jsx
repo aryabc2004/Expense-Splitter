@@ -1,4 +1,4 @@
-export default function Sidebar({ groups, activeGroupId, onSelectGroup }) {
+export default function Sidebar({ groups, activeGroupId, onSelectGroup, onCreateGroup }) {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
@@ -6,7 +6,7 @@ export default function Sidebar({ groups, activeGroupId, onSelectGroup }) {
       </div>
       <div className="group-list">
         <div className="nav-label">Groups</div>
-        {groups.map((g, i) => (
+        {groups.map(g => (
           <div
             key={g.id}
             className={`group-card ${g.id === activeGroupId ? 'active' : ''}`}
@@ -19,6 +19,9 @@ export default function Sidebar({ groups, activeGroupId, onSelectGroup }) {
             </div>
           </div>
         ))}
+        <button className="new-group-btn" onClick={onCreateGroup}>
+          + New group
+        </button>
       </div>
     </div>
   )

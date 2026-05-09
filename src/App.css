@@ -483,3 +483,19 @@ body {
   padding: 6px 0;
   border-bottom: 1px solid rgba(0,0,0,0.08);
 }
+.new-group-btn {
+  width: 100%;
+  text-align: left;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: #0F6E56;
+  margin-top: 4px;
+}
+
+.new-group-btn:hover {
+  background: #E1F5EE;
+}
