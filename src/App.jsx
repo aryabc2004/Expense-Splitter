@@ -3,6 +3,7 @@ import './App.css'
 import Sidebar from './components/Sidebar'
 import Topbar from './components/Topbar'
 import BalancesTab from './components/BalancesTab'
+import ExpensesTab from './components/ExpensesTab'
 import AddExpense from './components/AddExpense'
 
 const INITIAL_GROUPS = [
@@ -26,6 +27,7 @@ export default function App() {
   const [groups, setGroups] = useState(INITIAL_GROUPS)
   const [activeGroupId, setActiveGroupId] = useState('g1')
   const [showAddExpense, setShowAddExpense] = useState(false)
+  const [activeTab, setActiveTab] = useState('balances')
 
   const activeGroup = groups.find(g => g.id === activeGroupId)
 
@@ -51,7 +53,29 @@ export default function App() {
           onAddExpense={() => setShowAddExpense(true)}
         />
         <div className="content">
-          <BalancesTab group={activeGroup} currentUser={CURRENT_USER} />
+
+          <div className="tab-bar">
+            {['balances', 'expenses', 'settle'].map(tab => (
+              <button
+                key={tab}
+                className={`tab ${activeTab === tab ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          {activeTab === 'balances' && (
+            <BalancesTab group={activeGroup} currentUser={CURRENT_USER} />
+          )}
+          {activeTab === 'expenses' && (
+            <ExpensesTab group={activeGroup} currentUser={CURRENT_USER} />
+          )}
+          {activeTab === 'settle' && (
+            <div className="empty-state">Settle up coming in step 8.</div>
+          )}
+
         </div>
       </div>
 
