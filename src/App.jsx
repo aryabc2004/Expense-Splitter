@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import Login from './components/Login'
 import Sidebar from './components/Sidebar'
 import Topbar from './components/Topbar'
 import BalancesTab from './components/BalancesTab'
@@ -11,7 +12,8 @@ import CreateGroup from './components/CreateGroup'
 const INITIAL_GROUPS = [
   {
     id: 'g1',
-    name: 'Tokyo Trip',
+    name: 'Example Group (Template)',
+    isTemplate: true,
     color: '#1D9E75',
     members: ['you@example.com', 'priya@gmail.com', 'alex@gmail.com'],
     expenses: [
@@ -23,9 +25,8 @@ const INITIAL_GROUPS = [
   }
 ]
 
-const CURRENT_USER = 'you@example.com'
-
 export default function App() {
+  const [currentUser, setCurrentUser] = useState(null)
   const [groups, setGroups] = useState(INITIAL_GROUPS)
   const [activeGroupId, setActiveGroupId] = useState('g1')
   const [showAddExpense, setShowAddExpense] = useState(false)
@@ -33,6 +34,10 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('balances')
 
   const activeGroup = groups.find(g => g.id === activeGroupId)
+
+  if (!currentUser) {
+    return <Login onLogin={setCurrentUser} />
+  }
 
   function handleAddExpense(expense) {
     setGroups(prev => prev.map(g =>
@@ -109,12 +114,12 @@ export default function App() {
           </div>
 
           {activeTab === 'balances' && (
-            <BalancesTab group={activeGroup} currentUser={CURRENT_USER} />
+            <BalancesTab group={activeGroup} currentUser={currentUser} />
           )}
           {activeTab === 'expenses' && (
             <ExpensesTab
               group={activeGroup}
-              currentUser={CURRENT_USER}
+              currentUser={currentUser}
               onDeleteExpense={handleDeleteExpense}
               onEditExpense={handleEditExpense}
             />
@@ -122,7 +127,7 @@ export default function App() {
           {activeTab === 'settle' && (
             <SettleTab
               group={activeGroup}
-              currentUser={CURRENT_USER}
+              currentUser={currentUser}
               onSettle={handleSettle}
             />
           )}
@@ -133,7 +138,7 @@ export default function App() {
       {showAddExpense && (
         <AddExpense
           group={activeGroup}
-          currentUser={CURRENT_USER}
+          currentUser={currentUser}
           onClose={() => setShowAddExpense(false)}
           onAdd={handleAddExpense}
         />

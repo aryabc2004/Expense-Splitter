@@ -16,6 +16,9 @@ export default function Sidebar({ groups, activeGroupId, onSelectGroup, onCreate
             <div>
               <div className="group-name">{g.name}</div>
               <div className="group-meta">{g.members.length} members</div>
+              {g.isTemplate && (
+                <div className="template-badge">sample</div>
+              )}
             </div>
           </div>
         ))}
