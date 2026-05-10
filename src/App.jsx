@@ -24,7 +24,7 @@ export default function App() {
   }
 
   function handleAddExpense(expense) {
-    setGroup(prev => ({ ...prev, expenses: [...prev.expenses, expense], settlements: [] }))
+    setGroup(prev => ({ ...prev, expenses: [...prev.expenses, expense] }))
   }
 
   function handleDeleteExpense(expenseId) {

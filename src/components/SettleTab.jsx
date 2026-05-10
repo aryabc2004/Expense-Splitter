@@ -1,13 +1,12 @@
-import { computeBalancesAfterSettlements, minimumTransactions, nameOf, memberColor, getInitials } from '../utils/calculations'
+import { computeBalances, minimumTransactions, nameOf, memberColor, getInitials } from '../utils/calculations'
 
 export default function SettleTab({ group, currentUser, onSettle }) {
-  const balances = computeBalancesAfterSettlements(group)
+  const balances = computeBalances(group)
   const transactions = minimumTransactions(balances)
 
   const isSettled = (t) => group.settlements.some(
-    s => s.from === t.from && s.to === t.to
-  )
-
+  s => s.from === t.from && s.to === t.to && Math.abs(s.amount - t.amount) < 0.01
+)
   return (
     <div>
       {transactions.length === 0 ? (

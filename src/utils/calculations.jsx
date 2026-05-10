@@ -16,21 +16,22 @@ export function memberColor(email, members) {
 export function computeBalances(group) {
   const bal = {}
   group.members.forEach(m => bal[m] = 0)
+
+  // Add all expenses
   group.expenses.forEach(exp => {
     bal[exp.paid] += exp.amount
     Object.entries(exp.splits).forEach(([m, amt]) => { bal[m] -= amt })
   })
-  return bal
-}
 
-export function computeBalancesAfterSettlements(group) {
-  const bal = computeBalances(group)
+  // Subtract all settlements
   group.settlements.forEach(s => {
     bal[s.from] += s.amount
     bal[s.to] -= s.amount
   })
+
   return bal
 }
+
 export function minimumTransactions(balances) {
   const debtors = []
   const creditors = []
@@ -48,12 +49,9 @@ export function minimumTransactions(balances) {
     const debtor = debtors[i]
     const creditor = creditors[j]
     const amount = Math.min(debtor.amount, creditor.amount)
-
     transactions.push({ from: debtor.person, to: creditor.person, amount })
-
     debtor.amount -= amount
     creditor.amount -= amount
-
     if (debtor.amount < 0.01) i++
     if (creditor.amount < 0.01) j++
   }

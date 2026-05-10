@@ -1,8 +1,8 @@
-import { computeBalancesAfterSettlements, memberColor, nameOf, getInitials } from '../utils/calculations'
+import { computeBalances, memberColor, nameOf, getInitials } from '../utils/calculations'
 
 export default function BalancesTab({ group, currentUser }) {
-  const balances = computeBalancesAfterSettlements(group)
-  
+  const balances = computeBalances(group)
+
   return (
     <div className="balance-grid">
       {group.members.map(m => {

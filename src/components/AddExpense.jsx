@@ -8,15 +8,27 @@ export default function AddExpense({ group, currentUser, onClose, onAdd }) {
   const [involved, setInvolved] = useState(group.members.map(() => true))
   const [customSplits, setCustomSplits] = useState(group.members.map(() => ''))
 
-  const checkedCount = involved.filter(Boolean).length
-  const equalShare = amount && checkedCount > 0
-    ? (parseFloat(amount) / checkedCount).toFixed(2)
-    : ''
+  const total = parseFloat(amount) || 0
+  const checkedIndexes = involved.map((v, i) => v ? i : -1).filter(i => i !== -1)
+  const lockedTotal = customSplits.reduce((sum, val, i) => {
+    return involved[i] && val !== '' ? sum + (parseFloat(val) || 0) : sum
+  }, 0)
+  const unlockedCount = checkedIndexes.filter(i => customSplits[i] === '').length
+  const autoShare = unlockedCount > 0 ? Math.max(0, (total - lockedTotal) / unlockedCount) : 0
+
+  function getDisplayAmount(i) {
+    if (!involved[i]) return ''
+    if (customSplits[i] !== '') return customSplits[i]
+    return autoShare.toFixed(2)
+  }
 
   function handleToggle(i) {
     const next = [...involved]
     next[i] = !next[i]
+    const nextCustom = [...customSplits]
+    if (!next[i]) nextCustom[i] = ''
     setInvolved(next)
+    setCustomSplits(nextCustom)
   }
 
   function handleCustomSplit(i, val) {
@@ -25,25 +37,33 @@ export default function AddExpense({ group, currentUser, onClose, onAdd }) {
     setCustomSplits(next)
   }
 
+  function clearCustomSplit(i) {
+    const next = [...customSplits]
+    next[i] = ''
+    setCustomSplits(next)
+  }
+
   function handleSubmit() {
     if (!desc.trim()) return alert('Add a description')
-    if (!amount || parseFloat(amount) <= 0) return alert('Add an amount')
+    if (!total) return alert('Add an amount')
 
     const splits = {}
     group.members.forEach((m, i) => {
       if (!involved[i]) return
-      splits[m] = customSplits[i] !== '' ? parseFloat(customSplits[i]) : parseFloat(equalShare)
+      splits[m] = parseFloat(getDisplayAmount(i)) || 0
     })
 
     const splitTotal = Object.values(splits).reduce((a, b) => a + b, 0)
-    if (Math.abs(splitTotal - parseFloat(amount)) > 0.05) {
-      return alert(`Splits ($${splitTotal.toFixed(2)}) must equal total ($${parseFloat(amount).toFixed(2)})`)
+    if (Math.abs(splitTotal - total) > 0.05) {
+      return alert(`Splits ($${splitTotal.toFixed(2)}) must equal total ($${total.toFixed(2)})`)
     }
+
+    
 
     onAdd({
       id: 'e' + Date.now(),
       desc: desc.trim(),
-      amount: parseFloat(amount),
+      amount: total,
       paid,
       splits,
       date: new Date().toISOString().slice(0, 10)
@@ -55,7 +75,6 @@ export default function AddExpense({ group, currentUser, onClose, onAdd }) {
   return (
     <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div className="modal">
-
         <div className="modal-header">
           <div className="modal-title">Add expense</div>
           <button className="modal-close" onClick={onClose}>×</button>
@@ -102,17 +121,27 @@ export default function AddExpense({ group, currentUser, onClose, onAdd }) {
                   checked={involved[i]}
                   onChange={() => handleToggle(i)}
                 />
-                <label>{nameOf(m, currentUser)}</label>
+                <label style={{ flex: 1 }}>{nameOf(m, currentUser)}</label>
                 <input
                   className="split-input"
                   type="number"
-                  placeholder={involved[i] ? equalShare : '—'}
+                  placeholder={involved[i] ? autoShare.toFixed(2) : '—'}
                   value={customSplits[i]}
                   disabled={!involved[i]}
                   onChange={e => handleCustomSplit(i, e.target.value)}
                 />
+                {customSplits[i] !== '' && involved[i] && (
+                  <button
+                    onClick={() => clearCustomSplit(i)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#a8a8a5', fontSize: '14px', padding: '0 4px' }}
+                    title="Reset to auto"
+                  >×</button>
+                )}
               </div>
             ))}
+            <div style={{ fontSize: '11px', color: '#a8a8a5', marginTop: '6px' }}>
+              Remaining: ${Math.max(0, total - lockedTotal - (autoShare * unlockedCount)).toFixed(2)} · Click × to reset a custom amount
+            </div>
           </div>
         </div>
 
@@ -120,7 +149,6 @@ export default function AddExpense({ group, currentUser, onClose, onAdd }) {
           <button className="btn-secondary" onClick={onClose}>Cancel</button>
           <button className="btn-primary" onClick={handleSubmit}>Add expense</button>
         </div>
-
       </div>
     </div>
   )
