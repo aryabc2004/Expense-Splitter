@@ -43,14 +43,24 @@ export default function ExpensesTab({ group, currentUser, onDeleteExpense, onAdd
     })
 
     const extraMatch = text.match(/(\w+)\s+owes\s+(?:an?\s+)?extra\s+\$?(\d+(?:\.\d+)?)/i)
-    if (extraMatch) {
-      const extraPerson = group.members.find(m =>
-        m.split('@')[0].toLowerCase() === extraMatch[1].toLowerCase()
-      )
-      if (extraPerson && splits[extraPerson] !== undefined) {
-        splits[extraPerson] = parseFloat((splits[extraPerson] + parseFloat(extraMatch[2])).toFixed(2))
-      }
-    }
+if (extraMatch) {
+  const extraPerson = group.members.find(m =>
+    m.split('@')[0].toLowerCase() === extraMatch[1].toLowerCase()
+  )
+  const extraAmt = parseFloat(extraMatch[2])
+  if (extraPerson && splits[extraPerson] !== undefined) {
+    // Add extra to their share
+    splits[extraPerson] = parseFloat((splits[extraPerson] + extraAmt).toFixed(2))
+    // Reduce the extra evenly among everyone else
+    const others = involved.filter(m => m !== extraPerson)
+    const reduction = parseFloat((extraAmt / others.length).toFixed(2))
+    others.forEach((m, i) => {
+      splits[m] = i === others.length - 1
+        ? parseFloat((splits[m] - (extraAmt - reduction * (others.length - 1))).toFixed(2))
+        : parseFloat((splits[m] - reduction).toFixed(2))
+    })
+  }
+}
 
     onAddExpense({
       id: 'e' + Date.now(),
