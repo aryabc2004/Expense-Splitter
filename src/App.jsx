@@ -95,6 +95,7 @@ export default function App() {
               group={group}
               currentUser={currentUser}
               onDeleteExpense={handleDeleteExpense}
+              onAddExpense={handleAddExpense}
             />
           )}
           {activeTab === 'settle' && (
