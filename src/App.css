@@ -499,3 +499,16 @@ body {
 .new-group-btn:hover {
   background: #E1F5EE;
 }
+.btn-danger {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid #E24B4A;
+  background: none;
+  color: #E24B4A;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background: #FCEBEB;
+}

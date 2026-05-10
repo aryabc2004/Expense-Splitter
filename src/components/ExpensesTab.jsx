@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { nameOf, memberColor, getInitials } from '../utils/calculations'
 import ExpenseDetail from './ExpenseDetail'
 
-export default function ExpensesTab({ group, currentUser }) {
+export default function ExpensesTab({ group, currentUser, onDeleteExpense, onEditExpense }) {
   const [sortBy, setSortBy] = useState('date')
   const [sortDir, setSortDir] = useState(-1)
   const [selectedExpense, setSelectedExpense] = useState(null)
@@ -75,6 +75,8 @@ export default function ExpensesTab({ group, currentUser }) {
           group={group}
           currentUser={currentUser}
           onClose={() => setSelectedExpense(null)}
+          onDelete={onDeleteExpense}
+          onEdit={onEditExpense}
         />
       )}
     </div>

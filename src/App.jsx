@@ -42,6 +42,22 @@ export default function App() {
     ))
   }
 
+  function handleDeleteExpense(expenseId) {
+    setGroups(prev => prev.map(g =>
+      g.id === activeGroupId
+        ? { ...g, expenses: g.expenses.filter(e => e.id !== expenseId) }
+        : g
+    ))
+  }
+
+  function handleEditExpense(updatedExpense) {
+    setGroups(prev => prev.map(g =>
+      g.id === activeGroupId
+        ? { ...g, expenses: g.expenses.map(e => e.id === updatedExpense.id ? updatedExpense : e) }
+        : g
+    ))
+  }
+
   function handleSettle(transaction) {
     setGroups(prev => prev.map(g =>
       g.id === activeGroupId
@@ -96,7 +112,12 @@ export default function App() {
             <BalancesTab group={activeGroup} currentUser={CURRENT_USER} />
           )}
           {activeTab === 'expenses' && (
-            <ExpensesTab group={activeGroup} currentUser={CURRENT_USER} />
+            <ExpensesTab
+              group={activeGroup}
+              currentUser={CURRENT_USER}
+              onDeleteExpense={handleDeleteExpense}
+              onEditExpense={handleEditExpense}
+            />
           )}
           {activeTab === 'settle' && (
             <SettleTab
