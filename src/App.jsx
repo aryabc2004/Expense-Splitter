@@ -9,25 +9,27 @@ import SettleTab from './components/SettleTab'
 import AddExpense from './components/AddExpense'
 import CreateGroup from './components/CreateGroup'
 
-const INITIAL_GROUPS = [
-  {
-    id: 'g1',
-    name: 'Example Group (Template)',
-    isTemplate: true,
-    color: '#1D9E75',
-    members: ['you@example.com', 'priya@gmail.com', 'alex@gmail.com'],
-    expenses: [
-      { id: 'e1', desc: 'Airbnb', amount: 480, paid: 'you@example.com', splits: { 'you@example.com': 160, 'priya@gmail.com': 160, 'alex@gmail.com': 160 }, date: '2024-03-10' },
-      { id: 'e2', desc: 'Ramen dinner', amount: 60, paid: 'priya@gmail.com', splits: { 'you@example.com': 20, 'priya@gmail.com': 20, 'alex@gmail.com': 20 }, date: '2024-03-11' },
-      { id: 'e3', desc: 'Theme park', amount: 200, paid: 'alex@gmail.com', splits: { 'you@example.com': 50, 'priya@gmail.com': 100, 'alex@gmail.com': 50 }, date: '2024-03-12' },
-    ],
-    settlements: []
-  }
-]
+function createInitialGroups(currentUser) {
+  return [
+    {
+      id: 'g1',
+      name: 'Example Group (Template)',
+      isTemplate: true,
+      color: '#1D9E75',
+      members: [currentUser, 'priya@gmail.com', 'alex@gmail.com'],
+      expenses: [
+        { id: 'e1', desc: 'Airbnb', amount: 480, paid: currentUser, splits: { [currentUser]: 160, 'priya@gmail.com': 160, 'alex@gmail.com': 160 }, date: '2024-03-10' },
+        { id: 'e2', desc: 'Ramen dinner', amount: 60, paid: 'priya@gmail.com', splits: { [currentUser]: 20, 'priya@gmail.com': 20, 'alex@gmail.com': 20 }, date: '2024-03-11' },
+        { id: 'e3', desc: 'Theme park', amount: 200, paid: 'alex@gmail.com', splits: { [currentUser]: 50, 'priya@gmail.com': 100, 'alex@gmail.com': 50 }, date: '2024-03-12' },
+      ],
+      settlements: []
+    }
+  ]
+}
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null)
-  const [groups, setGroups] = useState(INITIAL_GROUPS)
+  const [groups, setGroups] = useState([])
   const [activeGroupId, setActiveGroupId] = useState('g1')
   const [showAddExpense, setShowAddExpense] = useState(false)
   const [showCreateGroup, setShowCreateGroup] = useState(false)
@@ -35,14 +37,19 @@ export default function App() {
 
   const activeGroup = groups.find(g => g.id === activeGroupId)
 
+  function handleLogin(email) {
+    setCurrentUser(email)
+    setGroups(createInitialGroups(email))
+  }
+
   if (!currentUser) {
-    return <Login onLogin={setCurrentUser} />
+    return <Login onLogin={handleLogin} />
   }
 
   function handleAddExpense(expense) {
     setGroups(prev => prev.map(g =>
       g.id === activeGroupId
-        ? { ...g, expenses: [...g.expenses, expense] }
+        ? { ...g, expenses: [...g.expenses, expense], settlements: [] }
         : g
     ))
   }
@@ -50,15 +57,7 @@ export default function App() {
   function handleDeleteExpense(expenseId) {
     setGroups(prev => prev.map(g =>
       g.id === activeGroupId
-        ? { ...g, expenses: g.expenses.filter(e => e.id !== expenseId) }
-        : g
-    ))
-  }
-
-  function handleEditExpense(updatedExpense) {
-    setGroups(prev => prev.map(g =>
-      g.id === activeGroupId
-        ? { ...g, expenses: g.expenses.map(e => e.id === updatedExpense.id ? updatedExpense : e) }
+        ? { ...g, expenses: g.expenses.filter(e => e.id !== expenseId), settlements: [] }
         : g
     ))
   }
@@ -121,7 +120,6 @@ export default function App() {
               group={activeGroup}
               currentUser={currentUser}
               onDeleteExpense={handleDeleteExpense}
-              onEditExpense={handleEditExpense}
             />
           )}
           {activeTab === 'settle' && (
