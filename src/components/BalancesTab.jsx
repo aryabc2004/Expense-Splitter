@@ -1,8 +1,8 @@
-import { computeBalances, memberColor, nameOf, getInitials } from '../utils/calculations'
+import { computeBalancesAfterSettlements, memberColor, nameOf, getInitials } from '../utils/calculations'
 
 export default function BalancesTab({ group, currentUser }) {
-  const balances = computeBalances(group)
-
+  const balances = computeBalancesAfterSettlements(group)
+  
   return (
     <div className="balance-grid">
       {group.members.map(m => {
@@ -12,7 +12,13 @@ export default function BalancesTab({ group, currentUser }) {
 
         return (
           <div className="bal-card" key={m}>
-            <div className="bal-avatar" style={{ background: memberColor(m, group.members) + '22', color: memberColor(m, group.members) }}>
+            <div
+              className="bal-avatar"
+              style={{
+                background: memberColor(m, group.members) + '22',
+                color: memberColor(m, group.members)
+              }}
+            >
               {getInitials(m)}
             </div>
             <div className="bal-name">{nameOf(m, currentUser)}</div>

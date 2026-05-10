@@ -20,7 +20,15 @@ export function computeBalances(group) {
     bal[exp.paid] += exp.amount
     Object.entries(exp.splits).forEach(([m, amt]) => { bal[m] -= amt })
   })
-  group.settlements.forEach(s => { bal[s.from] -= s.amount; bal[s.to] += s.amount })
+  return bal
+}
+
+export function computeBalancesAfterSettlements(group) {
+  const bal = computeBalances(group)
+  group.settlements.forEach(s => {
+    bal[s.from] += s.amount
+    bal[s.to] -= s.amount
+  })
   return bal
 }
 export function minimumTransactions(balances) {
